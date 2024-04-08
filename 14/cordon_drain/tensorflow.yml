@@ -1,0 +1,15 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: tensorflow-pod
+spec:
+  containers:
+  - name: tensorflow
+    image: tensorflow/tensorflow:nightly-jupyter
+    ports:
+    - containerPort: 888
+      protocol: TCP
+  nodeSelector:
+    disktype: "ssd"
+    gpu: "true"
+

@@ -1,0 +1,21 @@
+kind: Pod 
+apiVersion: v1 
+metadata: 
+  name: web-nfs 
+spec: 
+  containers:
+  - name: mginx
+    image: nginx:1.14
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: html
+      mountPath: /usr/share/nginx/html 
+
+  volumes: 
+  - name: html 
+    nfs: 
+      server: 192.168.10.50
+      path: /nas/k8s
+
+  

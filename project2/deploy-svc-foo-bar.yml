@@ -1,0 +1,103 @@
+--- 
+kind: Service 
+apiVersion: v1 
+metadata: 
+  name: bar-svc
+spec: 
+  # type: ClusterIP 
+  # clusterIP: 10.233.10.10
+  selector: 
+    app: bar-app 
+  ports:
+  - port: 8080
+    targetPort: 8080 
+
+---
+kind: Deployment 
+apiVersion: apps/v1 
+metadata: 
+  name: bar-deploy
+spec: 
+  replicas: 2
+  selector: 
+    matchLabels: 
+      app: bar-app 
+  template: 
+    metadata:
+      name: bar-pod 
+      labels: 
+        app: bar-app
+    spec:
+      containers: 
+      - name: bar-container 
+        image: whatwant/node-web:2.0
+        ports: 
+        - containerPort: 8080    
+
+---
+kind: Service 
+apiVersion: v1 
+metadata: 
+  name: foo-svc
+spec: 
+  # type: ClusterIP 
+  # clusterIP: 10.233.10.10
+  selector: 
+    app: foo-app 
+  ports:
+  - port: 4200
+    targetPort: 8080 
+
+--- 
+kind: Deployment 
+apiVersion: apps/v1 
+metadata: 
+  name: foo-deploy
+spec: 
+  replicas: 2
+  selector: 
+    matchLabels:
+      app: foo-app
+  template: 
+    metadata:
+      name: foo-pod 
+      labels: 
+        app: foo-app
+    spec:
+      containers: 
+      - name: foo-container 
+        image: whatwant/node-web:2.0
+        ports: 
+        - containerPort: 8080
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress
+spec:
+  ingressClassName: nginx 
+  rules:
+  - host: foo.bar.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: foo-svc 
+            port:
+              number: 4200
+  - host: bar.foo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: bar-svc 
+            port:
+              number: 8080
+
+
